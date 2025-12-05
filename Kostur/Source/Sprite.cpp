@@ -25,7 +25,7 @@ void Sprite::setupMesh() {
     };
 
     unsigned int indices[] = {
-        0, 1, 3,  // first triangle
+        0, 1, 3,  // first triangles
         1, 2, 3   // second triangle
     };
 
@@ -62,13 +62,11 @@ void Sprite::draw(int windowWidth, int windowHeight) {
     // Translate to position
     model = glm::translate(model, glm::vec3(position, 0.0f));
 
-    // Rotate around center
-    model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+    // Rotate around center   
     model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
 
     // Scale
-    model = glm::scale(model, glm::vec3(size, 1.0f));
+    model = glm::scale(model, glm::vec3(size.x, -size.y, 1.0f));
 
     // Create orthographic projection matrix (pixel coordinates)
     glm::mat4 projection = glm::ortho(0.0f, (float)windowWidth,

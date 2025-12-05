@@ -124,23 +124,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CollisionController.cpp" />
-    <ClCompile Include="MovementController.cpp" />
-    <ClCompile Include="Source\Main.cpp" />
-    <ClCompile Include="Source\Util.cpp" />
-    <ClCompile Include="Sprite.cpp" />
     <None Include="sprite.frag">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CollisionController.h" />
-    <ClInclude Include="Header\stb_image.h" />
-    <ClInclude Include="Header\Util.h" />
-    <ClInclude Include="MovementController.h" />
-    <ClInclude Include="Sprite.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -149,6 +137,20 @@
   <ItemGroup>
     <Image Include="..\..\bun.png" />
     <Image Include="Assets\cart.png" />
+    <Image Include="Assets\claw_machine.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\CollisionController.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\MovementController.cpp" />
+    <ClCompile Include="Source\Sprite.cpp" />
+    <ClCompile Include="Source\Util.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header\CollisionController.h" />
+    <ClInclude Include="Header\MovementController.h" />
+    <ClInclude Include="Header\Sprite.h" />
+    <ClInclude Include="Header\Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

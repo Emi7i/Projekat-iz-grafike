@@ -28,20 +28,30 @@ int main()
     unsigned int spriteShader = createShader("Shaders/sprite.vert", "Shaders/sprite.frag");
 
     // Load textures
-    unsigned int texture1 = getPreprocessedTexture("Assets/bun.png");
-    unsigned int texture2 = getPreprocessedTexture("Assets/cart.png");
+    unsigned int player_tex = getPreprocessedTexture("Assets/bun.png");
+    unsigned int machine_tex = getPreprocessedTexture("Assets/claw_machine.png");
 
     // Create player sprite
-    Sprite* player = new Sprite(texture1, spriteShader);
+    Sprite* player = new Sprite(player_tex, spriteShader);
     player->setPosition(100, 100);
     player->setSize(64, 64);
     player->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     // Create obstacle sprite
-    Sprite* obstacle = new Sprite(texture2, spriteShader);
-    obstacle->setPosition(400, 400);
-    obstacle->setSize(100, 100);
-    obstacle->setColor(1.0f, 1.0f, 1.0f, 1.0f);
+    Sprite* machine = new Sprite(machine_tex, spriteShader);
+    machine->setPosition(400, 400);
+    machine->setSize(273*2, 372*2);
+    machine->setColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    // Create a 1x1 white texture for debug boxes
+    unsigned int whiteTexture;
+    glGenTextures(1, &whiteTexture);
+    glBindTexture(GL_TEXTURE_2D, whiteTexture);
+    unsigned char white[] = { 255, 255, 255, 255 };
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, white);
+
+    // Create debug box sprite
+    Sprite* debugBox = new Sprite(whiteTexture, spriteShader);
 
     // Create movement controller for player
     MovementController* playerMovement = new MovementController(player, 200.0f);
@@ -71,36 +81,36 @@ int main()
             playerMovement->moveRight(deltaTime);
         }
 
-        // Update movement (if using velocity)
-        playerMovement->update(deltaTime);
-
         // Check collision with obstacle
         AABB playerBox = playerMovement->getBoundingBox();
-        AABB obstacleBox(obstacle->getPosition(), obstacle->getSize());
 
-        glm::vec2 penetration;
-        if (CollisionController::checkCollisionWithPenetration(playerBox, obstacleBox, penetration)) {
-            // Push player out of obstacle
-            glm::vec2 newPos = playerMovement->getPosition() + penetration;
-            playerMovement->setPosition(newPos);
+        // Define your movement box
+        float boxMinX = 218.0f;
+        float boxMinY = 130.0f;
+        float boxMaxX = 668.0f;
+        float boxMaxY = 450.0f;
 
-            // Change player color when colliding
-            player->setColor(1.0f, 0.0f, 1.0f, 1.0f);  // Magenta
-        }
-        else {
-            player->setColor(1.0f, 1.0f, 1.0f, 1.0f);  // White
-        }
+        // Clamp player to the restricted box
+        CollisionController::clampToBox(playerBox, boxMinX, boxMinY, boxMaxX, boxMaxY);
 
-        // Keep player on screen
-        playerBox = playerMovement->getBoundingBox();
-        CollisionController::clampToScreen(playerBox, WINDOW_WIDTH, WINDOW_HEIGHT);
+        // Update player position
         playerMovement->setPosition(playerBox.position);
-
         // ===== RENDER (Drawing) =====
         glClear(GL_COLOR_BUFFER_BIT);
 
-        obstacle->draw(WINDOW_WIDTH, WINDOW_HEIGHT);
+        machine->draw(WINDOW_WIDTH, WINDOW_HEIGHT);
         player->draw(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+        // Draw the restricted box in red
+        float boxCenterX = (boxMinX + boxMaxX) / 2.0f;
+        float boxCenterY = (boxMinY + boxMaxY) / 2.0f;
+        float boxWidth = boxMaxX - boxMinX;
+        float boxHeight = boxMaxY - boxMinY;
+
+        debugBox->setPosition(boxCenterX, boxCenterY);
+        debugBox->setSize(boxWidth, boxHeight);
+        debugBox->setColor(1.0f, 0.0f, 0.0f, 0.3f);  // Red, semi-transparent
+        debugBox->draw(WINDOW_WIDTH, WINDOW_HEIGHT);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -109,10 +119,12 @@ int main()
     // Cleanup
     delete playerMovement;
     delete player;
-    delete obstacle;
+    delete machine;
+    delete debugBox;
+    glDeleteTextures(1, &whiteTexture);
     glDeleteProgram(spriteShader);
-    glDeleteTextures(1, &texture1);
-    glDeleteTextures(1, &texture2);
+    glDeleteTextures(1, &player_tex);
+    glDeleteTextures(1, &machine_tex);
 
     glfwDestroyWindow(window);
     glfwTerminate();

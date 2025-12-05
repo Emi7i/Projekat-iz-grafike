@@ -12,16 +12,13 @@ struct AABB {
     AABB() : position(0.0f), size(0.0f) {}
     AABB(glm::vec2 pos, glm::vec2 sz) : position(pos), size(sz) {}
 
-    // Get center point
-    glm::vec2 getCenter() const {
-        return position + size * 0.5f;
-    }
+    glm::vec2 getCenter() const { return position; } // position IS the center
 
     // Get min/max bounds
-    float getLeft() const { return position.x; }
-    float getRight() const { return position.x + size.x; }
-    float getTop() const { return position.y; }
-    float getBottom() const { return position.y + size.y; }
+    float getLeft() const { return position.x - size.x / 2.0f; }
+    float getRight() const { return position.x + size.x / 2.0f; }
+    float getTop() const { return position.y - size.y / 2.0f; }
+    float getBottom() const { return position.y + size.y / 2.0f; }
 };
 
 class CollisionController {
@@ -37,6 +34,8 @@ public:
 
     // Clamp AABB within bounds (useful for keeping sprite on screen)
     static void clampToScreen(AABB& box, float screenWidth, float screenHeight);
+
+    static void clampToBox(AABB& box, float minX, float minY, float maxX, float maxY);
 };
 
 #endif

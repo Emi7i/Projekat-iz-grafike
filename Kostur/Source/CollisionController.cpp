@@ -1,4 +1,4 @@
-#include "CollisionController.h"
+#include "../Header/CollisionController.h"
 #include <algorithm>
 
 bool CollisionController::checkCollision(const AABB& a, const AABB& b) {
@@ -48,19 +48,43 @@ bool CollisionController::checkCollisionWithPenetration(const AABB& a, const AAB
 }
 
 void CollisionController::clampToScreen(AABB& box, float screenWidth, float screenHeight) {
+    float halfWidth = box.size.x / 2.0f;
+    float halfHeight = box.size.y / 2.0f;
+
     // Clamp to left/right edges
-    if (box.getLeft() < 0.0f) {
-        box.position.x = 0.0f;
+    if (box.position.x < halfWidth) {
+        box.position.x = halfWidth;
     }
-    if (box.getRight() > screenWidth) {
-        box.position.x = screenWidth - box.size.x;
+    if (box.position.x > screenWidth - halfWidth) {
+        box.position.x = screenWidth - halfWidth;
     }
 
     // Clamp to top/bottom edges
-    if (box.getTop() < 0.0f) {
-        box.position.y = 0.0f;
+    if (box.position.y < halfHeight) {
+        box.position.y = halfHeight;
     }
-    if (box.getBottom() > screenHeight) {
-        box.position.y = screenHeight - box.size.y;
+    if (box.position.y > screenHeight - halfHeight) {
+        box.position.y = screenHeight - halfHeight;
+    }
+}
+
+void CollisionController::clampToBox(AABB& box, float minX, float minY, float maxX, float maxY) {
+    float halfWidth = box.size.x / 2.0f;
+    float halfHeight = box.size.y / 2.0f;
+
+    // Clamp to left/right bounds
+    if (box.position.x - halfWidth < minX) {
+        box.position.x = minX + halfWidth;
+    }
+    if (box.position.x + halfWidth > maxX) {
+        box.position.x = maxX - halfWidth;
+    }
+
+    // Clamp to top/bottom bounds
+    if (box.position.y - halfHeight < minY) {
+        box.position.y = minY + halfHeight;
+    }
+    if (box.position.y + halfHeight > maxY) {
+        box.position.y = maxY - halfHeight;
     }
 }

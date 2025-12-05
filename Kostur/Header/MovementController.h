@@ -3,7 +3,7 @@
 #define MOVEMENT_CONTROLLER_H
 
 #include <glm/glm.hpp>
-#include "Sprite.h"
+#include "../Header/Sprite.h"
 #include "CollisionController.h"
 
 class MovementController {
