@@ -4,6 +4,7 @@
 #include "../Header/Sprite.h"
 #include "../Header/CollisionController.h"
 #include "../Header/MovementController.h"
+#include "../Header/ClawController.h"
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 800;
@@ -28,19 +29,19 @@ int main()
     unsigned int spriteShader = createShader("Shaders/sprite.vert", "Shaders/sprite.frag");
 
     // Load textures
-    unsigned int player_tex = getPreprocessedTexture("Assets/bun.png");
+    unsigned int claw_tex = getPreprocessedTexture("Assets/claw.png");
     unsigned int machine_tex = getPreprocessedTexture("Assets/claw_machine.png");
 
-    // Create player sprite
-    Sprite* player = new Sprite(player_tex, spriteShader);
-    player->setPosition(100, 100);
-    player->setSize(64, 64);
-    player->setColor(1.0f, 1.0f, 1.0f, 1.0f);
+    // Create claw sprite
+    Sprite* claw = new Sprite(claw_tex, spriteShader);
+    claw->setPosition(100, 100);
+    claw->setSize(64, 64);
+    claw->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     // Create obstacle sprite
     Sprite* machine = new Sprite(machine_tex, spriteShader);
     machine->setPosition(400, 400);
-    machine->setSize(273*2, 372*2);
+    machine->setSize(273 * 2, 372 * 2);
     machine->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     // Create a 1x1 white texture for debug boxes
@@ -53,12 +54,13 @@ int main()
     // Create debug box sprite
     Sprite* debugBox = new Sprite(whiteTexture, spriteShader);
 
-    // Create movement controller for player
-    MovementController* playerMovement = new MovementController(player, 200.0f);
+    // Create movement controller for claw
+    ClawController* clawMovement = new ClawController(claw, 200.0f);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
     float lastTime = glfwGetTime();
+    bool downWasPressed = false;  // To detect single press
 
     while (!glfwWindowShouldClose(window))
     {
@@ -67,22 +69,28 @@ int main()
         float deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
-        // Handle input
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-            playerMovement->moveUp(deltaTime);
-        }
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-            playerMovement->moveDown(deltaTime);
-        }
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-            playerMovement->moveLeft(deltaTime);
-        }
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            playerMovement->moveRight(deltaTime);
+        // Only allow left/right movement when NOT grabbing
+        if (!clawMovement->isGrabbingActive()) {
+            // Handle input     
+            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+                clawMovement->moveLeft(deltaTime);
+            }
+            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+                clawMovement->moveRight(deltaTime);
+            }
+
+            // Check for space press to start grab animation
+            if ((glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) && !downWasPressed) {
+                clawMovement->startGrab(clawMovement->getPosition().y);
+                downWasPressed = true;
+            }
+            if ((glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE) || glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+                downWasPressed = false;
+            }
         }
 
-        // Check collision with obstacle
-        AABB playerBox = playerMovement->getBoundingBox();
+        // Always update grab animation
+        clawMovement->grabItem(deltaTime);
 
         // Define your movement box
         float boxMinX = 218.0f;
@@ -90,16 +98,18 @@ int main()
         float boxMaxX = 668.0f;
         float boxMaxY = 450.0f;
 
-        // Clamp player to the restricted box
-        CollisionController::clampToBox(playerBox, boxMinX, boxMinY, boxMaxX, boxMaxY);
+        // Get claw bounding box and clamp to the restricted box
+        AABB clawBox = clawMovement->getBoundingBox();
+        CollisionController::clampToBox(clawBox, boxMinX, boxMinY, boxMaxX, boxMaxY);
 
-        // Update player position
-        playerMovement->setPosition(playerBox.position);
+        // Update claw position
+        clawMovement->setPosition(clawBox.position);
+
         // ===== RENDER (Drawing) =====
         glClear(GL_COLOR_BUFFER_BIT);
 
         machine->draw(WINDOW_WIDTH, WINDOW_HEIGHT);
-        player->draw(WINDOW_WIDTH, WINDOW_HEIGHT);
+        claw->draw(WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // Draw the restricted box in red
         float boxCenterX = (boxMinX + boxMaxX) / 2.0f;
@@ -117,13 +127,13 @@ int main()
     }
 
     // Cleanup
-    delete playerMovement;
-    delete player;
+    delete clawMovement;
+    delete claw;
     delete machine;
     delete debugBox;
     glDeleteTextures(1, &whiteTexture);
     glDeleteProgram(spriteShader);
-    glDeleteTextures(1, &player_tex);
+    glDeleteTextures(1, &claw_tex);
     glDeleteTextures(1, &machine_tex);
 
     glfwDestroyWindow(window);

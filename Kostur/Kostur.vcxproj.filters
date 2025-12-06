@@ -39,6 +39,12 @@
     <Image Include="Assets\claw_machine.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Assets\claw.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\cat.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CollisionController.cpp">
@@ -56,6 +62,9 @@
     <ClCompile Include="Source\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ClawController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Util.h">
@@ -68,6 +77,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\CollisionController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\ClawController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

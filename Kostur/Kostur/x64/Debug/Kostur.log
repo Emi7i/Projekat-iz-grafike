@@ -1,4 +1,6 @@
-﻿  Main.cpp
-C:\Users\emili\Downloads\RG_Kostur\Projekat-iz-grafike\Kostur\Source\Main.cpp(61,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\emili\Downloads\RG_Kostur\Projekat-iz-grafike\Kostur\Source\Main.cpp(66,27): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+﻿  ClawController.cpp
+  Main.cpp
+C:\Users\emili\Downloads\RG_Kostur\Projekat-iz-grafike\Kostur\Source\Main.cpp(62,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\emili\Downloads\RG_Kostur\Projekat-iz-grafike\Kostur\Source\Main.cpp(68,27): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
   Kostur.vcxproj -> C:\Users\emili\Downloads\RG_Kostur\Projekat-iz-grafike\Kostur\x64\Debug\Kostur.exe

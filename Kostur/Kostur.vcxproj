@@ -137,9 +137,12 @@
   <ItemGroup>
     <Image Include="..\..\bun.png" />
     <Image Include="Assets\cart.png" />
+    <Image Include="Assets\cat.png" />
+    <Image Include="Assets\claw.png" />
     <Image Include="Assets\claw_machine.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\ClawController.cpp" />
     <ClCompile Include="Source\CollisionController.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\MovementController.cpp" />
@@ -147,6 +150,7 @@
     <ClCompile Include="Source\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header\ClawController.h" />
     <ClInclude Include="Header\CollisionController.h" />
     <ClInclude Include="Header\MovementController.h" />
     <ClInclude Include="Header\Sprite.h" />
